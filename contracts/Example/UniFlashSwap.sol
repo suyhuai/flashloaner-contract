@@ -1,11 +1,11 @@
 pragma solidity =0.6.2;
 
-import './interfaces/IUniswapV2Router02.sol';
-import './interfaces/IERC20.sol';
-import './interfaces/IWETH.sol';
-import './interfaces/IUniswapV2Pair.sol';
+import '../uniswap/interfaces/IUniswapV2Router02.sol';
+import '../uniswap/interfaces/IERC20.sol';
+import '../uniswap/interfaces/IWETH.sol';
+import '../uniswap/interfaces/IUniswapV2Pair.sol';
 
-import './libraries/UniswapV2LiquidityMathLibrary.sol';
+import '../uniswap/libraries/UniswapV2LiquidityMathLibrary.sol';
 
 contract Job {
   address constant factory = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
