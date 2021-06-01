@@ -53,11 +53,12 @@ contract Job {
     loanAmount = _loanAmount;
     emit loanAmountEvent(loanAmount);
     
-    swapOtherToken();
+    // swapOtherToken();
     
     addLiquidity();
     
-    swapLoanToken();
+    addLiquidity();
+    // swapLoanToken();
     
     removeLiquidity();
     
