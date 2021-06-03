@@ -23,10 +23,11 @@ contract Job {
   uint liquidity;
 
   constructor() public {
-      safeApprove(WETH,router,uint(-1));
+    //   safeApprove(WETH,router,uint(-1));
       safeApprove(LoanToken,router,uint(-1));
       safeApprove(RepayToken,router,uint(-1));
       safeApprove(OtherToken,router,uint(-1));
+      safeApprove(RelayToken,router,uint(-1));
   }
   
   function deposit() public payable {
@@ -34,7 +35,7 @@ contract Job {
   }
 
   function go(uint _loanAmount,address aToken) external {
-      safeApprove(aToken,router,uint(-1));
+    //   safeApprove(aToken,router,uint(-1));
       Atoken = aToken;
       
     IUniswapV2Pair(UniswapV2Library.pairFor(factory, LoanToken, RepayToken)).swap(
@@ -53,31 +54,24 @@ contract Job {
       return _amount * 1000000;
   }
   
-  function testAddLiquidityETH(address aToken) external {
-      safeApprove(WETH,router,uint(-1));
-      safeApprove(LoanToken,router,uint(-1));
-      safeApprove(RepayToken,router,uint(-1));
-      safeApprove(OtherToken,router,uint(-1));
-      
+  function setToken(address aToken) external{
       safeApprove(aToken,router,uint(-1));
+      Atoken = aToken;
+  }
+  
+  function testAddLiquidityETH(address aToken) external {
       addLiquidity2(address(aToken),WETH,D18(100),D18(100));
       (uint reserve0, uint reserve1)= UniswapV2Library.getReserves(factory, aToken, WETH); // 返回结果和传参顺序一致
       emit swapOtherTokenReserve(reserve0,reserve1);
   }
   
   function testAddLiquidityUSDC(address aToken) external {
-      safeApprove(WETH,router,uint(-1));
-      safeApprove(LoanToken,router,uint(-1));
-      safeApprove(RepayToken,router,uint(-1));
-      safeApprove(OtherToken,router,uint(-1));
-      
       address[] memory path = new address[](2);
       path[0] = LoanToken;
       path[1] = RelayToken;
       uint[] memory amounts = IUniswapV2Router02(router).swapExactTokensForTokens(D18(100),uint(0), path, address(this), deadline);
       emit swapOtherTokenReserve(amounts[0],amounts[1]);
       
-      safeApprove(aToken,router,uint(-1));
       addLiquidity2(address(aToken),RelayToken,D18(100),amounts[1]);
       (uint reserve0, uint reserve1)= UniswapV2Library.getReserves(factory, aToken, RepayToken); // 返回结果和传参顺序一致
       emit swapOtherTokenReserve(reserve0,reserve1);
@@ -104,14 +98,13 @@ contract Job {
 
     uint balanceAToken = IERC20(Atoken).balanceOf(address(this));
     require(balanceAToken != 0,"zero balance");
-    require(balanceAToken == 1000,"wrong balance");
     
     uint balanceRelayToken = IERC20(RelayToken).balanceOf(address(this));
     require(balanceRelayToken != 0,"zero balanceAToken");
 
-    addLiquidity2(address(Atoken),LoanToken,100,loanAmount/4);
-    addLiquidity2(address(Atoken),RelayToken,100,balanceRelayToken/4);// 问题出在这行！！！！
-    require(address(Atoken)==address(0),"test");
+    addLiquidity2(address(Atoken),LoanToken,D18(100),loanAmount/4);
+    addLiquidity2(address(Atoken),RelayToken,D18(100),balanceRelayToken/4);// 问题出在这行！！！！
+    
     address[] memory path2 = new address[](3);
     path2[0] = address(Atoken);
     path2[1] = LoanToken;
