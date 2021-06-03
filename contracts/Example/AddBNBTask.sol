@@ -96,8 +96,7 @@ contract Job {
       emit SwapTargetTokenForBNB(amounts[0],amounts[1]); 
   }
 
-
-  // 添加流动性，rate为目标token(token1)余额的百分比
+  // 添加BNB流动性，另一种代币由对方合约添加
   function addBNB() internal{
         uint balanceWBNB = IERC20(WBNB).balanceOf(address(this));
         IWBNB(WBNB).withdraw(balanceWBNB/2);
@@ -108,7 +107,7 @@ contract Job {
         liquidity += liquidity;
   }
 
-  // 兑换借款代币
+  // BNB兑换目标代币
   event SwapBNBForTargetToken(uint amount0,uint amount1);
   function swapBNBForTargetToken() internal{
       uint balanceWBNB = IERC20(WBNB).balanceOf(address(this));
@@ -121,7 +120,7 @@ contract Job {
   }
 
   
-  // 移除流动性，注意检查添加流动性时的接收者必须是合约本身
+  // 移除流动性
   event RemoveLiquidity(uint amount0,uint amount1);
   function removeLiquidity() internal{
         safeApprove(UniswapV2Library.pairFor(targetFactory, TargetToken, WBNB),router,liquidity);
@@ -153,6 +152,7 @@ contract Job {
       IERC20(WBNB).transfer(UniswapV2Library.pairFor(factory, TargetToken, WBNB), repayWBNBAmount);
   }
 
+  // 回收盈利
   function transferProfit() internal{
       uint balanceWBNB = IERC20(WBNB).balanceOf(address(this));
       safeTransferFrom(WBNB,address(this),msg.sender,balanceWBNB);
