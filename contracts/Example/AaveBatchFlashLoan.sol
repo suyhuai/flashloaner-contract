@@ -10,7 +10,7 @@ import { SafeERC20, SafeMath } from "../aave/Libraries.sol";
     exposed to a 'griefing' attack, where the stored funds are used by an attacker.
     !!!
  */
-contract MyV2FlashLoan {
+contract AaveBatchFlashLoan {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -25,6 +25,9 @@ contract MyV2FlashLoan {
     /**
         This function is called after your contract has received the flash loaned amount
      */
+     event A1(uint amount);
+     event A2(uint amount);
+     event A3(uint amount);
     function executeOperation(
         address[] calldata assets,
         uint256[] calldata amounts,
@@ -47,6 +50,9 @@ contract MyV2FlashLoan {
         // these amounts.
 
         // Approve the LendingPool contract allowance to *pull* the owed amount
+        emit A1(amounts[0]);
+        emit A2(amounts[1]);
+        emit A3(amounts[2]);
         for (uint i = 0; i < assets.length; i++) {
             uint amountOwing = amounts[i].add(premiums[i]);
             IERC20(assets[i]).approve(address(LENDING_POOL), amountOwing);
@@ -68,8 +74,8 @@ contract MyV2FlashLoan {
         assets[6] = address(0x7FDb81B0b8a010dd4FFc57C3fecbf145BA8Bd947); // Kovan SNX
 
         uint256[] memory amounts = new uint256[](7);
-        amounts[0] = 1 ether;
-        amounts[1] = 1 ether;
+        amounts[0] = 2 ether;
+        amounts[1] = 3 ether;
         amounts[2] = 1 ether;
         amounts[3] = 1 ether;
         amounts[4] = 1 ether;
@@ -78,8 +84,8 @@ contract MyV2FlashLoan {
 
         // 0 = no debt, 1 = stable, 2 = variable
         uint256[] memory modes = new uint256[](7);
-        modes[0] = 0;
-        modes[1] = 0;
+        modes[0] = 1;
+        modes[1] = 2;
         modes[2] = 0;
         modes[3] = 0;
         modes[4] = 0;
